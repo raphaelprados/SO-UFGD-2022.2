@@ -35,7 +35,7 @@ int menu();
 void submenu(int menu_input);
 int tamanhoStringNum(int num);
 void destroiMatriz(int r, int c);
-bool primality_test(long number);
+bool primality_test(int number);
 void criarMatriz(int r, int c, int seed);
 void computarSubmatriz(void* parametros_funcao);
 std::vector<struct submatrix_coord> setarSubmatrizes();
@@ -125,6 +125,7 @@ struct submatrix_coord {
     struct coordinates bottom_right;
     bool verificada = false;
     bool regular = true;
+    long tamanho;
 };
 
 // Struct para manter controle de dados relevantes à thread
@@ -163,7 +164,7 @@ namespace patch
 
 
 menuInptVars inpt_vars;                                 // Variavel que controla varios dados de input do usuario
-long** matriz;                                          // Matriz dos dados
+int** matriz;                                          // Matriz dos dados
 HANDLE hMutex1;                                         // Mutex da selecao da submatriz
 HANDLE hMutex2;                                         // Mutex da atualizacao do total de primos
 HANDLE hMutex3;                                         // Mutex da criação do vetor de primos
@@ -278,7 +279,7 @@ int main() {
         destroiMatriz(inpt_vars.mx_rows, inpt_vars.mx_cols);
 
     // Finaliza as threads
-    if (inpt_vars.nThreads != 0)
+    if (hThreads.size() != 0)
         for (int i = 0; i < inpt_vars.nThreads; i++)
             CloseHandle(hThreads[i]);
 
@@ -540,9 +541,9 @@ void criarMatriz(int r, int c, int seed) {
     srand(seed);
 
     // Aloca a matriz 
-    matriz = new long* [r];
+    matriz = new int* [r];
     for (int i = 0; i < r; i++)
-        matriz[i] = new long[c];
+        matriz[i] = new int[c];
 
     // Associando os valores da matriz
     for (int i = 0; i < r; i++) {
@@ -577,7 +578,7 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
     int limit_C = inpt_vars.mx_cols - inpt_vars.mx_cols % inpt_vars.sbmx_cols - 1;
 
     std::vector<struct submatrix_coord> submatrizes;
-    coordinates fim_matriz = {inpt_vars.mx_rows, inpt_vars.mx_cols};
+    coordinates fim_matriz = {inpt_vars.mx_rows - 1, inpt_vars.mx_cols - 1};
 
     // Variavel de controle do loop
     int c = 0;
@@ -588,54 +589,38 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
     std::cout << "Threads (CPU): " << inpt_vars.getCpuThreads() << std::endl;
 
     // Designando endereço dos blocos regulares
-    for (int i = 0; i < R_size; i++) {
-        for (int j = 0; j < C_size; j++) {
-            submatrizes.push_back({
-                    { { i * inpt_vars.sbmx_rows  }, { j * inpt_vars.sbmx_cols } },
-                    { { i * (inpt_vars.sbmx_rows) + inpt_vars.sbmx_rows - 1 }, { j * inpt_vars.sbmx_cols + inpt_vars.sbmx_cols - 1 } }
-                });
-            c++;
-        }
-    }
-
-    // Designando endereço dos blocos irregulares
-    int temp_l = limit_C + 1;
-    int temp_k = 0;
-    int k = 0;
-    int l;
-    int iregular_sbmxcapacity = 0;
-
-    // Verifica se a matriz tem linhas restantes e não tem colunas restantes
-    remainder_C == 0 ? 
-        (remainder_R == 0 ? 
-            (k = fim_matriz.x) : k = limit_R + 1) 
-        : k = 0;
-    // Percorre os elementos restantes da matriz, criando matrizes irregular (pseudomatrizes) que contem o mesmo numero de elementos
-    //      que uma matriz regular
-    for (; k < fim_matriz.x; k++) {
-        remainder_C == 0 ? l = 0 : l = limit_C + 1;
-        for (; l < fim_matriz.y; l++) {
-            // Incrementa a variavel para verificar se a capacidade da pseudosubmatriz e igual a das submatrizes regulares
-            iregular_sbmxcapacity++;
-            // Caso o algoritmo chegar ao fim da matriz, a ultima submatriz pode ter capacidade menor ou igual as submatrizes regulares
-            if (iregular_sbmxcapacity == capacity || (l == (inpt_vars.mx_cols - 1) && k == (inpt_vars.mx_rows - 1))) {
+    if(remainder_C == 0 && remainder_R == 0)
+        for (int i = 0; i < R_size; i++) {
+            for (int j = 0; j < C_size; j++) {
                 submatrizes.push_back({
-                    { { temp_k  }, { temp_l } },
-                    { { k }, { l } }
-                    , false, false});
-                // Atualiza as variaveis para servirem como indices das proximas pseudosubmatrizes
-                temp_k = (l + 1) == inpt_vars.mx_cols ? k + 1 : k = k;
-                temp_l = l + 1;
-                iregular_sbmxcapacity = 0;
+                        { { i * inpt_vars.sbmx_rows  }, { j * inpt_vars.sbmx_cols } },
+                        { { i * (inpt_vars.sbmx_rows) + inpt_vars.sbmx_rows - 1 }, { j * inpt_vars.sbmx_cols + inpt_vars.sbmx_cols - 1 } }
+                    });
                 c++;
             }
-            // Verifica se o algoritmo chegou na linha na qual o primeiro elemento não verificado passa a ser a posicao 0
-            if (k == limit_R && l == (fim_matriz.y - 1) && limit_R != (inpt_vars.mx_rows - 1)) {
-                l = 0;
-                break;
-            }
         }
+    else { // Define pseudosubmatrizes, que sao praticamente vetores dentro da memoria
+        int inicio_x = 0,
+            inicio_y = 0;
+        long capacidade_sbmx = 0;
+        for(int i = 0; i <= fim_matriz.x; i++)
+            for (int j = 0; j <= fim_matriz.y; j++) {
+                capacidade_sbmx++;
+                if (capacidade_sbmx == capacity || (i == fim_matriz.x && j == fim_matriz.y)) {
+                    submatrizes.push_back({
+                        { { inicio_x  }, { inicio_y } },
+                        { { i }, { j } }
+                        , false, false,
+                        capacidade_sbmx});
+                    capacidade_sbmx = 0;
+                    inicio_x = i;
+                    inicio_y = j + 1;
+                }
+            }
     }
+
+    for (int i = 0; i < submatrizes.size(); i++)
+        std::cout << submatrizes[i].top_left.x << " " << submatrizes[i].top_left.y << " " << submatrizes[i].bottom_right.x << " " << submatrizes[i].bottom_right.y << " " << std::endl;
 
     return submatrizes;
 }
@@ -666,11 +651,20 @@ void criarThreads(std::vector<HANDLE>& hThreads, std::vector<struct thread_data>
 
 void computarSubmatriz(void* parametros_funcao) {
 
+    // Recebe o numero total de elementos que uma unica submatriz contem
+    long capacity = inpt_vars.sbmx_cols * inpt_vars.sbmx_rows;
+    // Numero da linha a partir do qual a matriz ja nao pode ser dividida perfeitamente 
+    int limit_R = inpt_vars.mx_rows - inpt_vars.mx_rows % inpt_vars.sbmx_rows - 1;
+    // Numero da linha a partir do qual a matriz ja nao pode ser dividida perfeitamente 
+    int limit_C = inpt_vars.mx_cols - inpt_vars.mx_cols % inpt_vars.sbmx_cols - 1;
+    // Variavel auxiliar para simplificar as referencias ao fim da matriz
+    coordinates fim_matriz = { inpt_vars.mx_rows - 1, inpt_vars.mx_cols - 1 };
     thread_data* thread_param = (thread_data*)parametros_funcao;
     struct submatrix_coord submatriz;
     int submatrizes_verificadas = 0;
     thread_param->primes = 0;
     bool prim_submx = true;
+
 
     // Mais threads do que submatrizes -> as threads restantes sao ignoradas
     if (thread_param->id >= submatrizes.size())
@@ -709,16 +703,30 @@ void computarSubmatriz(void* parametros_funcao) {
             return;
 
         // Percorrer a submatriz e calcular os primos
-        for (int i = submatriz.top_left.x; i <= submatriz.bottom_right.x; i++) {
-            for (int j = submatriz.top_left.y; j <= submatriz.bottom_right.y; j++)
-                if (primality_test(matriz[i][j])) 
-                    thread_param->primes++;
-                
-        }
+        if (submatriz.regular) { // Submatrizes regulares
+            for (int i = submatriz.top_left.x; i <= submatriz.bottom_right.x; i++) 
+                for (int j = submatriz.top_left.y; j <= submatriz.bottom_right.y; j++)
+                    if (primality_test(matriz[i][j]))
+                        thread_param->primes++;
+            
+        } else { // Pseudosubmatrizes
+            long tamanho_submatriz = 0;
+            int j = 0;
+            for (int i = submatriz.top_left.x; i != fim_matriz.x + 1 || tamanho_submatriz != submatriz.tamanho; i++) {
+                j = (i == submatriz.top_left.x ? submatriz.top_left.y : 0);
+                for (; j != fim_matriz.y + 1 || tamanho_submatriz != submatriz.tamanho; j++) {
+                    if (primality_test(matriz[i][j]))
+                        thread_param->primes++;
+                    tamanho_submatriz++;
+                }
+            }
+        }                                                                                                                                                      
+        
 
         // Atualiza o valor na variavel global de contagem de primos
         WaitForSingleObject(hMutex2, INFINITE);
         total_primos += thread_param->primes;
+        /*std::cout << total_primos << " " << thread_param->primes << " " << submatriz.top_left.x << " " << submatriz.top_left.y << std::endl;*/
         ReleaseMutex(hMutex2);
 
         if (inpt_vars.nThreads > submatrizes.size())
@@ -738,7 +746,7 @@ void computarSubmatriz(void* parametros_funcao) {
 /* ---------------------------------------------- Funcoes de primalidade ---------------------------------------------- */
 
 
-bool primality_test(long number) {
+bool primality_test(int number) {
 
     // Usei signed char porque como o vetor so guarda três estados, um booleano é insuficiente, enquanto qualquer int é grande demais
     static signed char historico[50000000]; /* O vetor é compartilhado pelas threads. Por ser escrito com valores nao incrementais, nao precisa de secao critica */
@@ -762,7 +770,7 @@ bool primality_test(long number) {
         return (historico[endereco] == 'p');
 
     // Verifica, para 2..raiz(n) se o numero é 
-    for (int i = 3; i < (long)sqrt(number) + 1; i += 2)
+    for (int i = 3; i < (int)sqrt(number) + 1; i += 2)
         if (number % i == 0) {
             historico[endereco] = 'n';
             return false;
