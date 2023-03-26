@@ -29,6 +29,7 @@
 
 
 int menu();
+bool checaInput();
 void submenu(int menu_input);
 int tamanhoStringNum(int num);
 void destroiMatriz(int r, int c);
@@ -161,12 +162,13 @@ namespace patch
 
 
 menuInptVars inpt_vars;                                 // Variavel que controla varios dados de input do usuario
-int** matriz;                                          // Matriz dos dados
+int** matriz;                                           // Matriz dos dados
 HANDLE hMutex1;                                         // Mutex da selecao da submatriz
 HANDLE hMutex2;                                         // Mutex da atualizacao do total de primos
 HANDLE hMutex3;                                         // Mutex da criação do vetor de primos
 long long total_primos = 0;                             // Variavel global do total de primos
 std::vector <struct submatrix_coord> submatrizes;       // Vetor com as coordenadas de todas as submatrizes
+bool input_validator;                                   // Variavel que verifica se o tipo do input e valido
 
 
 /* ---------------------------------------------- Main ---------------------------------------------- */
@@ -202,6 +204,8 @@ int main() {
             break;
         case 4:
             // Cria as submatrizes. O processo está explicado dentro do metodo
+            if (!input_validator)
+                break;
             submatrizes = setarSubmatrizes();
             break;
         case 6:
@@ -291,8 +295,8 @@ int main() {
 int menu() {
 
     // Variaveis
-    int input = -1;
     int secondary_input = 0;
+    auto input = -1;
 
     for (bool laco = true; laco != false; laco = !((input == 8) || !(input == 3) || !(input == 6) || !(input == 7))) {
 
@@ -312,7 +316,9 @@ int menu() {
         std::cin >> input;
 
         // Validação do input do usuario
-        if (input < 1 || input > 9) {
+        if (input < 1 || input > 9 || std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore();
             std::cout << "Opcao invalida! Selecione uma opcao correta..." << std::endl;
             std::cin >> input;
         }
@@ -341,20 +347,32 @@ void submenu(int menu_input) {
         std::cout << "Matriz" << std::endl;
         std::cout << "Digite o numero de linhas: ";
         std::cin >> inpt_vars.mx_rows;
+        input_validator = checaInput();
+        if (!input_validator)
+            return;
         // Valida o valor de linhas para a matriz
-        while (inpt_vars.mx_rows <= 0) {
+        while (inpt_vars.mx_rows <= 0 && input_validator) {
             std::cout << "Erro! Digite um valor maior que zero para o numero de linhas!" << std::endl;
             std::cout << "Digite o numero de linhas: ";
             std::cin >> inpt_vars.mx_rows;
+            input_validator = checaInput();
+            if (!input_validator)
+                return;
         }
         // Obtem o valor de colunas para a matriz
         std::cout << "Digite o numero de colunas: ";
         std::cin >> inpt_vars.mx_cols;
+        input_validator = checaInput();
+        if (!input_validator)
+            return;
         // Valida o valor de colunas para a matriz
-        while (inpt_vars.mx_cols <= 0) {
+        while (inpt_vars.mx_cols <= 0 && input_validator) {
             std::cout << "Erro! Digite um valor maior que zero para o numero de colunas!" << std::endl;
             std::cout << "Digite o numero de colunas: ";
             std::cin >> inpt_vars.mx_cols;
+            input_validator = checaInput();
+            if (!input_validator)
+                return;
         }
         break;
 
@@ -364,11 +382,17 @@ void submenu(int menu_input) {
         // Obtem o valor para a semente 
         std::cout << "Semente para a geracao de valores: ";
         std::cin >> inpt_vars.seed;
+        input_validator = checaInput();
+        if (!input_validator)
+            return;
         // Valida o valor para a semente
-        while (inpt_vars.seed <= 0) {
+        while (inpt_vars.seed <= 0 && input_validator) {
             std::cout << "A semente digitada deve ser maior que zero (0)!" << std::endl;
             std::cout << "Semente para a geracao de valores: ";
             std::cin >> inpt_vars.seed;
+            input_validator = checaInput();
+            if (!input_validator)
+                return;
         }
         break;
 
@@ -379,12 +403,15 @@ void submenu(int menu_input) {
         if (!inpt_vars.seed) {
             std::cout << "Voce se esqueceu de digitar o numero da semente!" << std::endl;
             submenu(2);
-            break;
         }
         // Verifica se a matriz ja foi criada anteriormente e a apaga se sim
         if (inpt_vars.mx) {
             destroiMatriz(inpt_vars.mx_rows, inpt_vars.mx_cols);
             inpt_vars.mx = true;
+        }
+        if (inpt_vars.mx_cols <= 0 || inpt_vars.mx_rows <= 0) {
+            std::cout << "Sua matriz possui dimensoes invalidas!" << std::endl;
+            submenu(1);
         }
 
         break;
@@ -403,32 +430,50 @@ void submenu(int menu_input) {
         std::cout << "Submatriz" << std::endl;
         std::cout << "Digite o numero de linhas: ";
         std::cin >> inpt_vars.sbmx_rows;
+        input_validator = checaInput();
+        if (!input_validator)
+            return;
         // Valida os valores de linha para a submatriz em relacao a numeros positivos
-        while (inpt_vars.sbmx_rows <= 0) {
+        while (inpt_vars.sbmx_rows <= 0 && input_validator) {
             std::cout << "Erro! Digite um valor maior que zero para o numero de linhas!" << std::endl;
             std::cout << "Digite o numero de linhas: ";
             std::cin >> inpt_vars.sbmx_rows;
+            input_validator = checaInput();
+            if (!input_validator)
+                return;
         }
         // Valida os valores de linha para a submatriz em relacao ao numero de linhas da matriz
-        while (inpt_vars.sbmx_rows > inpt_vars.mx_rows) {
+        while (inpt_vars.sbmx_rows > inpt_vars.mx_rows && input_validator) {
             std::cout << "Erro! O numero de linhas da submatriz deve ser, no maximo, igual ao da matriz!" << std::endl;
             std::cout << "Digite o numero de linhas: ";
             std::cin >> inpt_vars.sbmx_rows;
+            input_validator = checaInput();
+            if (!input_validator)
+                return;
         }
         // Obtem o valor de colunas para a matriz
         std::cout << "Digite o numero de colunas: ";
         std::cin >> inpt_vars.sbmx_cols;
+        input_validator = checaInput();
+        if (!input_validator)
+            return;
         // Valida os valores de coluna para a submatriz em relacao a numeros positivos
-        while (inpt_vars.sbmx_cols <= 0) {
+        while (inpt_vars.sbmx_cols <= 0 && input_validator) {
             std::cout << "Erro! Digite um valor maior que zero para o numero de colunas!" << std::endl;
             std::cout << "Digite o numero de colunas: ";
             std::cin >> inpt_vars.sbmx_cols;
+            input_validator = checaInput();
+            if (!input_validator)
+                return;
         }
         // Valida os valores de coluna para a submatriz em relacao ao numero de colunas da matriz
-        while (inpt_vars.sbmx_rows > inpt_vars.mx_rows) {
+        while (inpt_vars.sbmx_rows > inpt_vars.mx_rows && input_validator) {
             std::cout << "Erro! O numero de colunas da submatriz deve ser, no maximo, igual ao da matriz!" << std::endl;
             std::cout << "Digite o numero de colunas: ";
             std::cin >> inpt_vars.sbmx_rows;
+            input_validator = checaInput();
+            if (!input_validator)
+                return;
         }
         break;
 
@@ -439,11 +484,17 @@ void submenu(int menu_input) {
             // Obtem o valor do numero de threads
             std::cout << "Numero de threads: ";
             std::cin >> inpt_vars.nThreads;
+            input_validator = checaInput();
+            if (!input_validator)
+                return;
             // Validacao do valor do numero de threads em relacao ao valor positivo
-            while (inpt_vars.nThreads <= 0) {
+            while (inpt_vars.nThreads <= 0 && input_validator) {
                 std::cout << "Erro! Digite um valor maior que zero para o numero de threads!" << std::endl;
                 std::cout << "Numero de threads: ";
                 std::cin >> inpt_vars.nThreads;
+                input_validator = checaInput();
+                if (!input_validator)
+                    return;
             }
             // Validacao do numero de threads em relacao ao numero de threads da CPU
             if (inpt_vars.nThreads > inpt_vars.getCpuThreads()) {
@@ -493,6 +544,20 @@ void submenu(int menu_input) {
     case 9:
         break;
     }
+
+    if (!input_validator)
+        submenu(menu_input);
+}
+
+bool checaInput() {
+    // Corrige input de type incorreto
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore();
+        std::cout << "Erro! Digite um valor numerico valido!" << std::endl;
+        return false;
+    }
+    return true;
 }
 
 
@@ -585,11 +650,6 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
     // Variavel de controle do loop
     int c = 0;
 
-    //std::cout << "Capacidade (submatriz): " << capacity << std::endl;
-    //std::cout << "R_size: " << R_size << ", C_size: " << C_size << std::endl;
-    //std::cout << "remainder_R: " << remainder_R << ", remainder_C: " << remainder_C << std::endl;
-    //std::cout << "Threads (CPU): " << inpt_vars.getCpuThreads() << std::endl;
-
     // Designando endereço dos blocos regulares
     if (remainder_C == 0 && remainder_R == 0)
         for (int i = 0; i < R_size; i++) {
@@ -620,9 +680,6 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
                 }
             }
     }
-
-    for (int i = 0; i < submatrizes.size(); i++)
-        std::cout << submatrizes[i].top_left.x << " " << submatrizes[i].top_left.y << " " << submatrizes[i].bottom_right.x << " " << submatrizes[i].bottom_right.y << std::endl;
 
     return submatrizes;
 }
