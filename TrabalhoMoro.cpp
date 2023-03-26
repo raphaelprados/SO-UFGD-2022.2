@@ -1,12 +1,9 @@
-
-
 /*
     Disciplina: Sistemas Operacionais - 2022 - 2
     Faculdade: FACET, UFGD
     Docente: Marcos Paulo Moro
     Discente: Raphael Alexsander Prado dos Santos
-
-    Os materiais utilizados como referência foram adicionados ao relatório, mas nos trechos onde estão, os 
+    Os materiais utilizados como referência foram adicionados ao relatório, mas nos trechos onde estão, os
         links são providenciados.
 */
 
@@ -51,65 +48,65 @@ void criarThreads(std::vector<HANDLE>& hThreads, std::vector<struct thread_data>
 // Struct cujos dados sao usados para validar inputs do usuario em relacao ao menu
 
 class menuInptVars {
-    private:
-        unsigned int cpuThreads;
-    public:
-        int mx_rows;
-        int mx_cols;
-        int sbmx_rows;
-        int sbmx_cols;
-        int nThreads;
-        int seed;
-        bool mx;
-        bool erro_menu;
-        bool hThreads_created;
-        bool executado;
-        bool impressao;
-        int* porcentagens;
+private:
+    unsigned int cpuThreads;
+public:
+    int mx_rows;
+    int mx_cols;
+    int sbmx_rows;
+    int sbmx_cols;
+    int nThreads;
+    int seed;
+    bool mx;
+    bool erro_menu;
+    bool hThreads_created;
+    bool executado;
+    bool impressao;
+    int* porcentagens;
 
-        menuInptVars() {
-            mx_rows = 0;
-            mx_cols = 0;
-            sbmx_rows = 0;
-            sbmx_cols = 0;
-            nThreads = 0;
-            seed = 0;
-            cpuThreads = std::thread::hardware_concurrency(); /* Obtem o numero de threads da CPU */
-            mx = false;
-            erro_menu = false;
-            hThreads_created = false;
-            executado = false;
-            impressao = false;
-            porcentagens = nullptr;
-        }
+    menuInptVars() {
+        mx_rows = 0;
+        mx_cols = 0;
+        sbmx_rows = 0;
+        sbmx_cols = 0;
+        nThreads = 0;
+        seed = 0;
+        cpuThreads = std::thread::hardware_concurrency(); /* Obtem o numero de threads da CPU */
+        mx = false;
+        erro_menu = false;
+        hThreads_created = false;
+        executado = false;
+        impressao = false;
+        porcentagens = nullptr;
+    }
 
-        menuInptVars(int mx_rows, int mx_cols, int sbmx_rows, int sbmx_cols, int nThreads, int seed) {
-            this->mx_rows = mx_rows;
-            this->mx_cols = mx_cols;
-            this->sbmx_rows = sbmx_rows;
-            this->sbmx_cols = sbmx_cols;
-            this->nThreads = nThreads;
-            this->seed= seed;
-            this->cpuThreads = std::thread::hardware_concurrency(); /* Obtem o numero de threads da CPU */
-            this->mx = false;
-            this->erro_menu = false;
-            this->hThreads_created = false;
-            this->executado = false;
-            this->impressao = false;
-            this->porcentagens = nullptr;
-        }
+    menuInptVars(int mx_rows, int mx_cols, int sbmx_rows, int sbmx_cols, int nThreads, int seed) {
+        this->mx_rows = mx_rows;
+        this->mx_cols = mx_cols;
+        this->sbmx_rows = sbmx_rows;
+        this->sbmx_cols = sbmx_cols;
+        this->nThreads = nThreads;
+        this->seed = seed;
+        this->cpuThreads = std::thread::hardware_concurrency(); /* Obtem o numero de threads da CPU */
+        this->mx = false;
+        this->erro_menu = false;
+        this->hThreads_created = false;
+        this->executado = false;
+        this->impressao = false;
+        this->porcentagens = nullptr;
+    }
 
-        int getCpuThreads() {
-            return cpuThreads;
-        }
+    int getCpuThreads() {
+        return cpuThreads;
+    }
 
-        void print() {
-            std::cout << "----------------------------Dados Matriz----------------------------\n"
-                << "| Numero de Threads: " << nThreads << charEspacoVariavel(46, tamanhoStringNum(nThreads)) << "|\n"
-                << "| Tamanho da matriz: " << "M[" << mx_rows << "][" << mx_cols << "]" << charEspacoVariavel(41, tamanhoStringNum(mx_rows) + tamanhoStringNum(mx_cols)) << "|\n"
-                << "| Tamanho da submatriz: " << "S[" << sbmx_rows << "][" << sbmx_cols << "]" << charEspacoVariavel(38, tamanhoStringNum(sbmx_rows) + tamanhoStringNum(sbmx_cols)) << "|\n"
-                << "| Seed de geracao da matriz: " << seed << charEspacoVariavel(38, tamanhoStringNum(seed)) << "|\n";
-        }
+    void print() {
+        std::cout << "----------------------------Dados Matriz----------------------------\n"
+            << "| Numero de Threads: " << nThreads << charEspacoVariavel(46, tamanhoStringNum(nThreads)) << "|\n"
+            << "| Tamanho da matriz: " << "M[" << mx_rows << "][" << mx_cols << "]" << charEspacoVariavel(41, tamanhoStringNum(mx_rows) + tamanhoStringNum(mx_cols)) << "|\n"
+            << "| Tamanho da submatriz: " << "S[" << sbmx_rows << "][" << sbmx_cols << "]" << charEspacoVariavel(38, tamanhoStringNum(sbmx_rows) + tamanhoStringNum(sbmx_cols)) << "|\n"
+            << "| Seed de geracao da matriz: " << seed << charEspacoVariavel(38, tamanhoStringNum(seed)) << "|\n";
+    }
 };
 
 
@@ -200,73 +197,73 @@ int main() {
     // Gerenciador das opcoes de menu
     do {
         switch (opcao_menu = menu()) {
-            case 3:
-                /* Geracao de matriz */
-                criarMatriz(inpt_vars.mx_rows, inpt_vars.mx_cols, inpt_vars.seed);
-                inpt_vars.mx = true;
-                break;
-            case 4:
-                // Cria as submatrizes. O processo está explicado dentro do metodo
-                submatrizes = setarSubmatrizes();
-                break;
-            case 6:
-            
-                // Zera a contagem de primos
-                total_primos = 0;
+        case 3:
+            /* Geracao de matriz */
+            criarMatriz(inpt_vars.mx_rows, inpt_vars.mx_cols, inpt_vars.seed);
+            inpt_vars.mx = true;
+            break;
+        case 4:
+            // Cria as submatrizes. O processo está explicado dentro do metodo
+            submatrizes = setarSubmatrizes();
+            break;
+        case 6:
 
-                // Caso o usuário decide um numero maior de threads do que de submatrizes, ele ignora a existencia das threads restantes
-                if (inpt_vars.nThreads > submatrizes.size()) {
-                    inpt_vars.nThreads = submatrizes.size();
-                }
+            // Zera a contagem de primos
+            total_primos = 0;
 
-                // Criacao as threads 
-                criarThreads(hThreads, dados_threads);
-            
-                // Reabre as submatrizes para avaliacao
-                for (int i = 0; i < submatrizes.size(); i++)
-                    submatrizes[i].verificada = false;
-            
-                // Verifica se as threads nao foram criadas
-                if (hThreads.size() == 0) {
-                    submenu(6);
-                    break;
-                }
-                start = clock();
-            
-                // Inicializa as threads
-                for (int i = 0; i < hThreads.size(); i++)
-                    ResumeThread(hThreads[i]);
-            
-                /* Execucao do algoritmo */
-                WaitForMultipleObjects(inpt_vars.nThreads, hThreads.data(), TRUE, INFINITE);
-            
-                // Suspende as threads
-                for (int i = 0; i < hThreads.size(); i++)
-                    SuspendThread(hThreads[i]);
-                end = clock();
+            // Caso o usuário decide um numero maior de threads do que de submatrizes, ele ignora a existencia das threads restantes
+            if (inpt_vars.nThreads > submatrizes.size()) {
+                inpt_vars.nThreads = submatrizes.size();
+            }
 
-                // Finaliza as threads
-                for (int i = 0; i < inpt_vars.nThreads; i++) {
-                    CloseHandle(hThreads[i]);
-                }
-                hThreads.clear();
-            
-                // Atualiza os dados de impressao
-                dados_execucao = { inpt_vars.mx_rows, inpt_vars.mx_cols, inpt_vars.sbmx_rows, inpt_vars.sbmx_cols, inpt_vars.nThreads, inpt_vars.seed, (end - start), submatrizes };
-                inpt_vars.executado = true;
+            // Criacao as threads 
+            criarThreads(hThreads, dados_threads);
 
+            // Reabre as submatrizes para avaliacao
+            for (int i = 0; i < submatrizes.size(); i++)
+                submatrizes[i].verificada = false;
+
+            // Verifica se as threads nao foram criadas
+            if (hThreads.size() == 0) {
+                submenu(6);
                 break;
-       
-            case 7:
-                /* Imprimir dados da execucao */
-                if (inpt_vars.impressao)
-                    imprimirExecucao(dados_execucao);
-                break;
-            case 9:
-                benchmark(hThreads, dados_threads);
-                break;
+            }
+            start = clock();
+
+            // Inicializa as threads
+            for (int i = 0; i < hThreads.size(); i++)
+                ResumeThread(hThreads[i]);
+
+            /* Execucao do algoritmo */
+            WaitForMultipleObjects(inpt_vars.nThreads, hThreads.data(), TRUE, INFINITE);
+
+            // Suspende as threads
+            for (int i = 0; i < hThreads.size(); i++)
+                SuspendThread(hThreads[i]);
+            end = clock();
+
+            // Finaliza as threads
+            for (int i = 0; i < inpt_vars.nThreads; i++) {
+                CloseHandle(hThreads[i]);
+            }
+            hThreads.clear();
+
+            // Atualiza os dados de impressao
+            dados_execucao = { inpt_vars.mx_rows, inpt_vars.mx_cols, inpt_vars.sbmx_rows, inpt_vars.sbmx_cols, inpt_vars.nThreads, inpt_vars.seed, (end - start), submatrizes };
+            inpt_vars.executado = true;
+
+            break;
+
+        case 7:
+            /* Imprimir dados da execucao */
+            if (inpt_vars.impressao)
+                imprimirExecucao(dados_execucao);
+            break;
+        case 9:
+            benchmark(hThreads, dados_threads);
+            break;
         }
-        
+
         // Verifica se houve alguma alteracao nos dados de execucao, para controlar a impressao correta de resultados
         if (dados_execucao.mx_cols != inpt_vars.mx_cols || dados_execucao.mx_rows != inpt_vars.mx_rows || dados_execucao.sbmx_cols != inpt_vars.sbmx_cols
             || dados_execucao.sbmx_rows != inpt_vars.sbmx_rows || dados_execucao.nThreads != inpt_vars.nThreads || dados_execucao.seed != inpt_vars.seed)
@@ -302,7 +299,7 @@ int menu() {
     for (bool laco = true; laco != false; laco = !((input == 8) || !(input == 3) || !(input == 6) || !(input == 7))) {
 
         inpt_vars.print(); /**/
-        std::cout << 
+        std::cout <<
             "--------------------------------Menu--------------------------------\n" <<
             "|1) Definir o tamanho da matriz                                    |\n" <<
             "|2) Definir semente para o gerador de numeros aleatorios           |\n" <<
@@ -339,164 +336,164 @@ void submenu(int menu_input) {
 
         /* Linha e coluna da matriz */
 
-        case 1:
-            // Obtem os valores de linha e coluna para a matriz
+    case 1:
+        // Obtem os valores de linha e coluna para a matriz
 
-            // Obtem o valor de linhas para a matriz
-            std::cout << "Matriz" << std::endl;
+        // Obtem o valor de linhas para a matriz
+        std::cout << "Matriz" << std::endl;
+        std::cout << "Digite o numero de linhas: ";
+        std::cin >> inpt_vars.mx_rows;
+        // Valida o valor de linhas para a matriz
+        while (inpt_vars.mx_rows <= 0) {
+            std::cout << "Erro! Digite um valor maior que zero para o numero de linhas!" << std::endl;
             std::cout << "Digite o numero de linhas: ";
             std::cin >> inpt_vars.mx_rows;
-            // Valida o valor de linhas para a matriz
-            while (inpt_vars.mx_rows <= 0) {
-                std::cout << "Erro! Digite um valor maior que zero para o numero de linhas!" << std::endl;
-                std::cout << "Digite o numero de linhas: ";
-                std::cin >> inpt_vars.mx_rows;
-            }
-            // Obtem o valor de colunas para a matriz
+        }
+        // Obtem o valor de colunas para a matriz
+        std::cout << "Digite o numero de colunas: ";
+        std::cin >> inpt_vars.mx_cols;
+        // Valida o valor de colunas para a matriz
+        while (inpt_vars.mx_cols <= 0) {
+            std::cout << "Erro! Digite um valor maior que zero para o numero de colunas!" << std::endl;
             std::cout << "Digite o numero de colunas: ";
             std::cin >> inpt_vars.mx_cols;
-            // Valida o valor de colunas para a matriz
-            while (inpt_vars.mx_cols <= 0) {
-                std::cout << "Erro! Digite um valor maior que zero para o numero de colunas!" << std::endl;
-                std::cout << "Digite o numero de colunas: ";
-                std::cin >> inpt_vars.mx_cols;
-            }
-            break;
+        }
+        break;
 
-            /* Definicao da semente */
+        /* Definicao da semente */
 
-        case 2:
-            // Obtem o valor para a semente 
+    case 2:
+        // Obtem o valor para a semente 
+        std::cout << "Semente para a geracao de valores: ";
+        std::cin >> inpt_vars.seed;
+        // Valida o valor para a semente
+        while (inpt_vars.seed <= 0) {
+            std::cout << "A semente digitada deve ser maior que zero (0)!" << std::endl;
             std::cout << "Semente para a geracao de valores: ";
             std::cin >> inpt_vars.seed;
-            // Valida o valor para a semente
-            while (inpt_vars.seed <= 0) {
-                std::cout << "A semente digitada deve ser maior que zero (0)!" << std::endl;
-                std::cout << "Semente para a geracao de valores: ";
-                std::cin >> inpt_vars.seed;
-            }
+        }
+        break;
+
+        /* Validacao para geracao da matriz */
+
+    case 3:
+        // Verifica se a semente foi digitada
+        if (!inpt_vars.seed) {
+            std::cout << "Voce se esqueceu de digitar o numero da semente!" << std::endl;
+            submenu(2);
             break;
+        }
+        // Verifica se a matriz ja foi criada anteriormente e a apaga se sim
+        if (inpt_vars.mx) {
+            destroiMatriz(inpt_vars.mx_rows, inpt_vars.mx_cols);
+            inpt_vars.mx = true;
+        }
 
-            /* Validacao para geracao da matriz */
+        break;
 
-        case 3:
-            // Verifica se a semente foi digitada
-            if (!inpt_vars.seed) {
-                std::cout << "Voce se esqueceu de digitar o numero da semente!" << std::endl;
-                submenu(2);
-                break;
-            }
-            // Verifica se a matriz ja foi criada anteriormente e a apaga se sim
-            if (inpt_vars.mx) {
-                destroiMatriz(inpt_vars.mx_rows, inpt_vars.mx_cols);
-                inpt_vars.mx = true;
-            }
+        /* Tamanho das submatrizes */
 
+    case 4:
+        // Obtem os valores de linha e coluna para a submatriz
+
+        // Verifica se a matriz ja foi definida. Se nao foi, impede de inserir os valores da submatriz
+        if (inpt_vars.mx_cols == 0 || inpt_vars.mx_rows == 0) {
+            std::cout << "Erro! Defina primeiro o numero de linhas e colunas da matriz!" << std::endl;
             break;
-
-            /* Tamanho das submatrizes */
-
-        case 4:
-            // Obtem os valores de linha e coluna para a submatriz
-
-            // Verifica se a matriz ja foi definida. Se nao foi, impede de inserir os valores da submatriz
-            if (inpt_vars.mx_cols == 0 || inpt_vars.mx_rows == 0) {
-                std::cout << "Erro! Defina primeiro o numero de linhas e colunas da matriz!" << std::endl;
-                break;
-            }
-            // Obtem o valor de linhas para a submatriz
-            std::cout << "Submatriz" << std::endl;
+        }
+        // Obtem o valor de linhas para a submatriz
+        std::cout << "Submatriz" << std::endl;
+        std::cout << "Digite o numero de linhas: ";
+        std::cin >> inpt_vars.sbmx_rows;
+        // Valida os valores de linha para a submatriz em relacao a numeros positivos
+        while (inpt_vars.sbmx_rows <= 0) {
+            std::cout << "Erro! Digite um valor maior que zero para o numero de linhas!" << std::endl;
             std::cout << "Digite o numero de linhas: ";
             std::cin >> inpt_vars.sbmx_rows;
-            // Valida os valores de linha para a submatriz em relacao a numeros positivos
-            while (inpt_vars.sbmx_rows <= 0) {
-                std::cout << "Erro! Digite um valor maior que zero para o numero de linhas!" << std::endl;
-                std::cout << "Digite o numero de linhas: ";
-                std::cin >> inpt_vars.sbmx_rows;
-            }
-            // Valida os valores de linha para a submatriz em relacao ao numero de linhas da matriz
-            while (inpt_vars.sbmx_rows > inpt_vars.mx_rows) {
-                std::cout << "Erro! O numero de linhas da submatriz deve ser, no maximo, igual ao da matriz!" << std::endl;
-                std::cout << "Digite o numero de linhas: ";
-                std::cin >> inpt_vars.sbmx_rows;
-            }
-            // Obtem o valor de colunas para a matriz
+        }
+        // Valida os valores de linha para a submatriz em relacao ao numero de linhas da matriz
+        while (inpt_vars.sbmx_rows > inpt_vars.mx_rows) {
+            std::cout << "Erro! O numero de linhas da submatriz deve ser, no maximo, igual ao da matriz!" << std::endl;
+            std::cout << "Digite o numero de linhas: ";
+            std::cin >> inpt_vars.sbmx_rows;
+        }
+        // Obtem o valor de colunas para a matriz
+        std::cout << "Digite o numero de colunas: ";
+        std::cin >> inpt_vars.sbmx_cols;
+        // Valida os valores de coluna para a submatriz em relacao a numeros positivos
+        while (inpt_vars.sbmx_cols <= 0) {
+            std::cout << "Erro! Digite um valor maior que zero para o numero de colunas!" << std::endl;
             std::cout << "Digite o numero de colunas: ";
             std::cin >> inpt_vars.sbmx_cols;
-            // Valida os valores de coluna para a submatriz em relacao a numeros positivos
-            while (inpt_vars.sbmx_cols <= 0) {
-                std::cout << "Erro! Digite um valor maior que zero para o numero de colunas!" << std::endl;
-                std::cout << "Digite o numero de colunas: ";
-                std::cin >> inpt_vars.sbmx_cols;
-            }
-            // Valida os valores de coluna para a submatriz em relacao ao numero de colunas da matriz
-            while (inpt_vars.sbmx_rows > inpt_vars.mx_rows) {
-                std::cout << "Erro! O numero de colunas da submatriz deve ser, no maximo, igual ao da matriz!" << std::endl;
-                std::cout << "Digite o numero de colunas: ";
-                std::cin >> inpt_vars.sbmx_rows;
-            }
-            break;
+        }
+        // Valida os valores de coluna para a submatriz em relacao ao numero de colunas da matriz
+        while (inpt_vars.sbmx_rows > inpt_vars.mx_rows) {
+            std::cout << "Erro! O numero de colunas da submatriz deve ser, no maximo, igual ao da matriz!" << std::endl;
+            std::cout << "Digite o numero de colunas: ";
+            std::cin >> inpt_vars.sbmx_rows;
+        }
+        break;
 
-            /* Numero de Threads */
+        /* Numero de Threads */
 
-        case 5:
-            do {
-                // Obtem o valor do numero de threads
+    case 5:
+        do {
+            // Obtem o valor do numero de threads
+            std::cout << "Numero de threads: ";
+            std::cin >> inpt_vars.nThreads;
+            // Validacao do valor do numero de threads em relacao ao valor positivo
+            while (inpt_vars.nThreads <= 0) {
+                std::cout << "Erro! Digite um valor maior que zero para o numero de threads!" << std::endl;
                 std::cout << "Numero de threads: ";
                 std::cin >> inpt_vars.nThreads;
-                // Validacao do valor do numero de threads em relacao ao valor positivo
-                while (inpt_vars.nThreads <= 0) {
-                    std::cout << "Erro! Digite um valor maior que zero para o numero de threads!" << std::endl;
-                    std::cout << "Numero de threads: ";
-                    std::cin >> inpt_vars.nThreads;
-                }
-                // Validacao do numero de threads em relacao ao numero de threads da CPU
-                if (inpt_vars.nThreads > inpt_vars.getCpuThreads()) {
-                    std::cout << "O valor de threads escolhido e maior que o numero de threads neste processador," <<
-                        "podendo causar perda de performance. Deseja continuar mesmo assim? (s/N)"
-                        << std::endl;
-                    std::cin >> resposta;
-                    if (resposta == 83 || resposta == 115)
-                        break;
-                    else if (resposta == 'n' || resposta == 'N')
-                        inpt_vars.nThreads = 0;
-                }
-
-            } while (inpt_vars.nThreads > inpt_vars.getCpuThreads());
-
-            break;
-
-            /* Execucao do algoritmo de calculo de numeros primos */
-
-        case 6:
-            if (!inpt_vars.getCpuThreads() || !inpt_vars.mx_cols || !inpt_vars.mx_rows || !inpt_vars.sbmx_cols || !inpt_vars.sbmx_rows || !inpt_vars.seed)
-                std::cout << std::endl << "Erro! Os seguintes campos ainda precisam ser preenchidos: \n"
-                    << (!inpt_vars.nThreads ? "5) Numero de threads\n" : "") 
-                    << (!inpt_vars.mx_cols || !inpt_vars.mx_rows ? "1) Definir o numero de linhas e colunas da matriz\n" : "") 
-                    << (!inpt_vars.sbmx_cols || !inpt_vars.sbmx_rows ? "4) Definir o numero de linhas e colunas da submatriz\n" : "") 
-                    << (!inpt_vars.seed ? "2) Definir a seed de geracao de numeros aleatorios\n" : "")
-                    << std::endl;
-            if (!inpt_vars.mx)
-                submenu(3);
-            if (!inpt_vars.nThreads)
-                submenu(5);
-            break;
-        case 7:
-            if (!inpt_vars.executado) {
-                do {
-                    std::cout << "Atencao! Os dados de execucao a serem impressos nao sao referentes aos dados atuais que voce inseriu. Deseja prosseguir?" << std::endl;
-                    std::cout << "> (s/N): ";
-                    std::cin >> resposta;
-                } while (resposta != 's' && resposta != 'S' && resposta != 'n' && resposta != 'N');
-
-                if (resposta == 's' || resposta == 'S')
-                    inpt_vars.impressao = true;
             }
-            else
+            // Validacao do numero de threads em relacao ao numero de threads da CPU
+            if (inpt_vars.nThreads > inpt_vars.getCpuThreads()) {
+                std::cout << "O valor de threads escolhido e maior que o numero de threads neste processador," <<
+                    "podendo causar perda de performance. Deseja continuar mesmo assim? (s/N)"
+                    << std::endl;
+                std::cin >> resposta;
+                if (resposta == 83 || resposta == 115)
+                    break;
+                else if (resposta == 'n' || resposta == 'N')
+                    inpt_vars.nThreads = 0;
+            }
+
+        } while (inpt_vars.nThreads > inpt_vars.getCpuThreads());
+
+        break;
+
+        /* Execucao do algoritmo de calculo de numeros primos */
+
+    case 6:
+        if (!inpt_vars.getCpuThreads() || !inpt_vars.mx_cols || !inpt_vars.mx_rows || !inpt_vars.sbmx_cols || !inpt_vars.sbmx_rows || !inpt_vars.seed)
+            std::cout << std::endl << "Erro! Os seguintes campos ainda precisam ser preenchidos: \n"
+            << (!inpt_vars.nThreads ? "5) Numero de threads\n" : "")
+            << (!inpt_vars.mx_cols || !inpt_vars.mx_rows ? "1) Definir o numero de linhas e colunas da matriz\n" : "")
+            << (!inpt_vars.sbmx_cols || !inpt_vars.sbmx_rows ? "4) Definir o numero de linhas e colunas da submatriz\n" : "")
+            << (!inpt_vars.seed ? "2) Definir a seed de geracao de numeros aleatorios\n" : "")
+            << std::endl;
+        if (!inpt_vars.mx)
+            submenu(3);
+        if (!inpt_vars.nThreads)
+            submenu(5);
+        break;
+    case 7:
+        if (!inpt_vars.executado) {
+            do {
+                std::cout << "Atencao! Os dados de execucao a serem impressos nao sao referentes aos dados atuais que voce inseriu. Deseja prosseguir?" << std::endl;
+                std::cout << "> (s/N): ";
+                std::cin >> resposta;
+            } while (resposta != 's' && resposta != 'S' && resposta != 'n' && resposta != 'N');
+
+            if (resposta == 's' || resposta == 'S')
                 inpt_vars.impressao = true;
-            break;
-        case 9:
-            break;
+        }
+        else
+            inpt_vars.impressao = true;
+        break;
+    case 9:
+        break;
     }
 }
 
@@ -506,12 +503,12 @@ void submenu(int menu_input) {
 
 void imprimirExecucao(struct dadosExecucao dados_execucao) {
     std::cout << "Numero de Threads: " << dados_execucao.nThreads << "\n"
-              << "Tamanho da matriz: " << "M[" << dados_execucao.mx_rows << "][" << dados_execucao.mx_cols << "]\n" 
-              << "Tamanho da submatriz: " << "S[" << dados_execucao.sbmx_rows << "][" << dados_execucao.sbmx_cols << "]\n" 
-              << "Seed de geracao da matriz: " << dados_execucao.seed << std::endl
-              << "Primos encontrados: " << total_primos << "\n" 
-              << "Tempo de execucao: " << ((double)dados_execucao.tempo) / CLOCKS_PER_SEC << "s"
-              << std::endl;;
+        << "Tamanho da matriz: " << "M[" << dados_execucao.mx_rows << "][" << dados_execucao.mx_cols << "]\n"
+        << "Tamanho da submatriz: " << "S[" << dados_execucao.sbmx_rows << "][" << dados_execucao.sbmx_cols << "]\n"
+        << "Seed de geracao da matriz: " << dados_execucao.seed << std::endl
+        << "Primos encontrados: " << total_primos << "\n"
+        << "Tempo de execucao: " << ((double)dados_execucao.tempo) / CLOCKS_PER_SEC << "s"
+        << std::endl;;
 }
 
 
@@ -536,7 +533,7 @@ int tamanhoStringNum(int num) {
 
 
 void criarMatriz(int r, int c, int seed) {
-    
+
     // Gera a semente fixa
     srand(seed);
 
@@ -578,7 +575,7 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
     int limit_C = inpt_vars.mx_cols - inpt_vars.mx_cols % inpt_vars.sbmx_cols - 1;
 
     std::vector<struct submatrix_coord> submatrizes;
-    coordinates fim_matriz = {inpt_vars.mx_rows - 1, inpt_vars.mx_cols - 1};
+    coordinates fim_matriz = { inpt_vars.mx_rows - 1, inpt_vars.mx_cols - 1 };
 
     // Variavel de controle do loop
     int c = 0;
@@ -589,7 +586,7 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
     std::cout << "Threads (CPU): " << inpt_vars.getCpuThreads() << std::endl;
 
     // Designando endereço dos blocos regulares
-    if(remainder_C == 0 && remainder_R == 0)
+    if (remainder_C == 0 && remainder_R == 0)
         for (int i = 0; i < R_size; i++) {
             for (int j = 0; j < C_size; j++) {
                 submatrizes.push_back({
@@ -603,7 +600,7 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
         int inicio_x = 0,
             inicio_y = 0;
         long capacidade_sbmx = 0;
-        for(int i = 0; i <= fim_matriz.x; i++)
+        for (int i = 0; i <= fim_matriz.x; i++)
             for (int j = 0; j <= fim_matriz.y; j++) {
                 capacidade_sbmx++;
                 if (capacidade_sbmx == capacity || (i == fim_matriz.x && j == fim_matriz.y)) {
@@ -611,16 +608,13 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
                         { { inicio_x  }, { inicio_y } },
                         { { i }, { j } }
                         , false, false,
-                        capacidade_sbmx});
+                        capacidade_sbmx });
                     capacidade_sbmx = 0;
                     inicio_x = i;
                     inicio_y = j + 1;
                 }
             }
     }
-
-    for (int i = 0; i < submatrizes.size(); i++)
-        std::cout << submatrizes[i].top_left.x << " " << submatrizes[i].top_left.y << " " << submatrizes[i].bottom_right.x << " " << submatrizes[i].bottom_right.y << " " << std::endl;
 
     return submatrizes;
 }
@@ -639,12 +633,12 @@ void criarThreads(std::vector<HANDLE>& hThreads, std::vector<struct thread_data>
 
     // Cria os dados individuais de cada thread e adiciona no vetor de dados de threads
     for (unsigned short i = 0; i < inpt_vars.nThreads; i++) {
-        t_data = {i, 0, false, inpt_vars.nThreads};
+        t_data = { i, 0, false, inpt_vars.nThreads };
         dados_threads.push_back(t_data);
     }
 
     // Cria as threads
-    for(int i = 0; i < inpt_vars.nThreads; i++)
+    for (int i = 0; i < inpt_vars.nThreads; i++)
         hThreads.push_back(CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&computarSubmatriz, &dados_threads[i], CREATE_SUSPENDED, NULL));
 
 }
@@ -698,30 +692,31 @@ void computarSubmatriz(void* parametros_funcao) {
             }
             ReleaseMutex(hMutex1);
         }
-        
+
         if (submatrizes_verificadas == submatrizes.size())
             return;
 
         // Percorrer a submatriz e calcular os primos
         if (submatriz.regular) { // Submatrizes regulares
-            for (int i = submatriz.top_left.x; i <= submatriz.bottom_right.x; i++) 
+            for (int i = submatriz.top_left.x; i <= submatriz.bottom_right.x; i++)
                 for (int j = submatriz.top_left.y; j <= submatriz.bottom_right.y; j++)
                     if (primality_test(matriz[i][j]))
                         thread_param->primes++;
-            
-        } else { // Pseudosubmatrizes
+
+        }
+        else { // Pseudosubmatrizes
             long tamanho_submatriz = 0;
             int j = 0;
             for (int i = submatriz.top_left.x; i != fim_matriz.x + 1 || tamanho_submatriz != submatriz.tamanho; i++) {
                 j = (i == submatriz.top_left.x ? submatriz.top_left.y : 0);
-                for (; j != fim_matriz.y + 1 || tamanho_submatriz != submatriz.tamanho; j++) {
+                for (; j != fim_matriz.y + 1 && tamanho_submatriz != submatriz.tamanho; j++) {
                     if (primality_test(matriz[i][j]))
                         thread_param->primes++;
                     tamanho_submatriz++;
                 }
             }
-        }                                                                                                                                                      
-        
+        }
+
 
         // Atualiza o valor na variavel global de contagem de primos
         WaitForSingleObject(hMutex2, INFINITE);
@@ -778,7 +773,7 @@ bool primality_test(int number) {
 
     historico[endereco] = 'p';
 
-    /*  
+    /*
         Legenda do vetor de primos:
             f -> não verificado
             p -> primo
@@ -796,8 +791,8 @@ void benchmark(std::vector<HANDLE>& hThreads, std::vector<struct thread_data>& d
     // Seta alguns valores, porem os unicos relevantes sao as submatrizes
     inpt_vars = menuInptVars(0, 0, 1000, 1000, 0, 0);
     // Dados base para tetste fixados
-    int matrixes[] = { 5000, 10000, 20000, 30000 };
-    int threads[] = { 1, 4, 8, 16 };
+    int matrixes[] = { 5000, 10000 };
+    int threads[] = { 1, 2, 3, 4, 8, 16, 32, 64 };    
     // Controle de escrita no arquivo de texto
     std::ofstream arquivo;
     // Calcula o tempo decorrido na execucao
@@ -808,7 +803,7 @@ void benchmark(std::vector<HANDLE>& hThreads, std::vector<struct thread_data>& d
     // Abre o arquivo de armazenamento para escrita
     arquivo.open("benchmark.txt", std::ofstream::trunc);
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 2; i++) {
 
         inpt_vars = menuInptVars(matrixes[i], matrixes[i], 250, 250, 0, 25);
         inpt_vars.mx = true;
@@ -817,7 +812,7 @@ void benchmark(std::vector<HANDLE>& hThreads, std::vector<struct thread_data>& d
         criarMatriz(matrixes[i], matrixes[i], 25);
         submatrizes = setarSubmatrizes();
 
-        for (int j = 0; j < 4; j++) {
+        for (int j = 0; j < 8; j++) {
             for (int m = 0; m < 5; m++) {
 
                 total_primos = 0;
@@ -862,4 +857,3 @@ void benchmark(std::vector<HANDLE>& hThreads, std::vector<struct thread_data>& d
 
     inpt_vars.nThreads = 0;
 }
-
