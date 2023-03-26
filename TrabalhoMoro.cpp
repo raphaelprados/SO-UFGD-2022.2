@@ -32,7 +32,7 @@ int menu();
 void submenu(int menu_input);
 int tamanhoStringNum(int num);
 void destroiMatriz(int r, int c);
-bool primality_test(int number);
+bool testePrimalidade(int number);
 void criarMatriz(int r, int c, int seed);
 void computarSubmatriz(void* parametros_funcao);
 std::vector<struct submatrix_coord> setarSubmatrizes();
@@ -184,8 +184,6 @@ int main() {
     struct thread_data t_data;
     clock_t start;
     clock_t end;
-
-    inpt_vars = menuInptVars(10000, 10000, 100, 100, 0, 6);
 
     // Coloca caracteres com acento
     setlocale(LC_ALL, "Portuguese");
@@ -537,6 +535,9 @@ void criarMatriz(int r, int c, int seed) {
     // Gera a semente fixa
     srand(seed);
 
+    if (inpt_vars.mx)
+        destroiMatriz(r, c);
+
     // Aloca a matriz 
     matriz = new int* [r];
     for (int i = 0; i < r; i++)
@@ -555,6 +556,10 @@ void destroiMatriz(int r, int c) {
     for (int i = 0; i < r; i++)
         delete[] matriz[i];
     delete[] matriz;
+
+    inpt_vars.mx = false;
+    inpt_vars.mx_cols = 0;
+    inpt_vars.mx_rows = 0;
 }
 
 std::vector<struct submatrix_coord> setarSubmatrizes() {
@@ -580,10 +585,10 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
     // Variavel de controle do loop
     int c = 0;
 
-    std::cout << "Capacidade (submatriz): " << capacity << std::endl;
-    std::cout << "R_size: " << R_size << ", C_size: " << C_size << std::endl;
-    std::cout << "remainder_R: " << remainder_R << ", remainder_C: " << remainder_C << std::endl;
-    std::cout << "Threads (CPU): " << inpt_vars.getCpuThreads() << std::endl;
+    //std::cout << "Capacidade (submatriz): " << capacity << std::endl;
+    //std::cout << "R_size: " << R_size << ", C_size: " << C_size << std::endl;
+    //std::cout << "remainder_R: " << remainder_R << ", remainder_C: " << remainder_C << std::endl;
+    //std::cout << "Threads (CPU): " << inpt_vars.getCpuThreads() << std::endl;
 
     // Designando endereço dos blocos regulares
     if (remainder_C == 0 && remainder_R == 0)
@@ -615,6 +620,9 @@ std::vector<struct submatrix_coord> setarSubmatrizes() {
                 }
             }
     }
+
+    for (int i = 0; i < submatrizes.size(); i++)
+        std::cout << submatrizes[i].top_left.x << " " << submatrizes[i].top_left.y << " " << submatrizes[i].bottom_right.x << " " << submatrizes[i].bottom_right.y << std::endl;
 
     return submatrizes;
 }
@@ -693,16 +701,16 @@ void computarSubmatriz(void* parametros_funcao) {
             ReleaseMutex(hMutex1);
         }
 
-        if (submatrizes_verificadas == submatrizes.size())
+        if (submatrizes_verificadas == submatrizes.size() && submatrizes.size() != 1)
             return;
 
         // Percorrer a submatriz e calcular os primos
         if (submatriz.regular) { // Submatrizes regulares
-            for (int i = submatriz.top_left.x; i <= submatriz.bottom_right.x; i++)
-                for (int j = submatriz.top_left.y; j <= submatriz.bottom_right.y; j++)
-                    if (primality_test(matriz[i][j]))
+            for (int i = submatriz.top_left.x; i <= submatriz.bottom_right.x; i++) 
+                for (int j = submatriz.top_left.y; j <= submatriz.bottom_right.y; j++) 
+                    if (testePrimalidade(matriz[i][j]))
                         thread_param->primes++;
-
+            
         }
         else { // Pseudosubmatrizes
             long tamanho_submatriz = 0;
@@ -710,7 +718,7 @@ void computarSubmatriz(void* parametros_funcao) {
             for (int i = submatriz.top_left.x; i != fim_matriz.x + 1 || tamanho_submatriz != submatriz.tamanho; i++) {
                 j = (i == submatriz.top_left.x ? submatriz.top_left.y : 0);
                 for (; j != fim_matriz.y + 1 && tamanho_submatriz != submatriz.tamanho; j++) {
-                    if (primality_test(matriz[i][j]))
+                    if (testePrimalidade(matriz[i][j]))
                         thread_param->primes++;
                     tamanho_submatriz++;
                 }
@@ -741,7 +749,7 @@ void computarSubmatriz(void* parametros_funcao) {
 /* ---------------------------------------------- Funcoes de primalidade ---------------------------------------------- */
 
 
-bool primality_test(int number) {
+bool testePrimalidade(int number) {
 
     // Usei signed char porque como o vetor so guarda três estados, um booleano é insuficiente, enquanto qualquer int é grande demais
     static signed char historico[50000000]; /* O vetor é compartilhado pelas threads. Por ser escrito com valores nao incrementais, nao precisa de secao critica */
@@ -792,7 +800,7 @@ void benchmark(std::vector<HANDLE>& hThreads, std::vector<struct thread_data>& d
     inpt_vars = menuInptVars(0, 0, 1000, 1000, 0, 0);
     // Dados base para tetste fixados
     int matrixes[] = { 5000, 10000 };
-    int threads[] = { 1, 2, 3, 4, 8, 16, 32, 64 };    
+    int threads[] = { 1, 2, 3, 4, 8, 16, 32, 64 };
     // Controle de escrita no arquivo de texto
     std::ofstream arquivo;
     // Calcula o tempo decorrido na execucao
